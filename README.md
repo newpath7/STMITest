@@ -9,5 +9,5 @@ Click [here](https://newpath7.github.io/STMITest/) to start the experiment.
 ## Contributions
 [Jungle Moon](https://github.com/newpath7) is the creator and maintainer of this repository.
 ## License
-Chalupax is under the [GNU GPL v3.0 license.](/LICENSE.txt)
+STMITest is under the [GNU GPL v3.0 license.](/LICENSE.txt)
 ## References

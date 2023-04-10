@@ -6,7 +6,7 @@
  *  See https://www.mathworks.com/matlabcentral/answers/13191-what-does-the-term-display-visual-resolution-in-pixels-degree-means 
  *
  */
-var dply_dst = 20;  // we are this much inches from display
+var dply_dst = 30;  // we are this much inches from display
 var dply_diag = 15.5;	// display diagonal in inches
 //var dply_wpx = window.innerWidth * window.devicePixelRatio;
 var dply_wpx = window.innerWidth;
@@ -15,25 +15,52 @@ var dply_hpx = window.innerHeight;
 var ppi = Math.sqrt((dply_wpx * dply_wpx) + (dply_hpx * dply_hpx)) / dply_diag;
 var ppd = dply_dst * (Math.PI/180)/ (1/ppi);  // pixels per degree
 var canvwidth = 800;
+var centerx = canvwidth / 2;
 var canvheight = 600;
+var centery = canvheight / 2;
 
 const RECT_VERT = 1;
 const RECT_HORZ = 2;
 const RECT_OBLI = 3;
 
+/* time intervals in ms */
+const MD_TI = 250;	// memory display time interval
+const MDCUE_TI_MIN = 100;		// min memory display to cue
+const MDCUE_TI_MAX = 1000;	// max memory display to cue
+
+
 class TrainTrial {
 	constructor() {
+		var pmv;
 		/* rect params */
 		this.rec_ori = Phaser.Utils.Array.Shuffle([RECT_VERT, RECT_VERT, RECT_VERT,
 			RECT_HORZ, RECT_HORZ, RECT_HORZ,
 			RECT_OBLI, RECT_OBLI, RECT_OBLI]);
-			this.rec_ori.pop();
-			this.rec_pos = [[100, 200], [75, 150], [50, 100], [75, 75],
-				[100, 100], [125, 300], [400, 500], [350, 200]];
+		this.rec_ori.pop();
+		this.rec_pos = [];
+		var pmv = new Phaser.Math.Vector2(0, 0);
+
+		for (let i = 0; i < 8; i++) {
+			pmv.setToPolar(i * Math.PI/4, 4.68 * ppd);
+			this.rec_pos.push([pmv.x + centerx, pmv.y + centery]);
+		}
 	}
 
-	memdisplay(s, g) {
-		console.log(this.rec_ori);
+	precued() {
+		game.scene.getScene("Train").children.getChildren().forEach((child) => {
+				if (child.type === "Container" && child.name == "rectangles") {
+					child.setVisible(false);
+				}
+		});
+	}
+
+	cuedisplay() {
+	}
+
+	memdisplay(s) {
+		var rec_container = s.add.container();
+		rec_container.setName("rectangles");
+
 		for (let i = 0; i < 8; i++) {
 				if (this.rec_ori[i] == RECT_HORZ) {
 				var rect = new Phaser.GameObjects.Rectangle(s, 
@@ -48,9 +75,7 @@ class TrainTrial {
 						this.rec_pos[i][0], this.rec_pos[i][1], 
 						1.16 * ppd, 0.29 * ppd, 0xffffff).setAngle(45);
 				}
-				s.add.existing(rect);
-		//		g.fillRectShape(rect);
-		//	graphics.fillRect(100, 200, 1.16 * ppd, 0.29 * ppd);
+				rec_container.add(rect);
 		}
 	}
 }
@@ -66,17 +91,21 @@ class Train extends Phaser.Scene {
 	{
 		let graphics = this.add.graphics();
 		graphics.fillStyle(0xff0000, 1);
-		let fixation = new Phaser.Geom.Circle(0, 0, 0.4 * ppd);
+		let fixation = new Phaser.Geom.Circle(centerx, centery, 0.4 * ppd);
 		graphics.fillCircleShape(fixation);
-		let atrial = new TrainTrial();
-		atrial.memdisplay(this, graphics);
+		let atrial = new TrainTrial(this);
+		atrial.memdisplay(this);
+		let a = this.time.addEvent({delay: MD_TI + MDCUE_TI_MAX, 
+					callback: atrial.cuedisplay, loop: false});
+		let b = this.time.addEvent({delay: MD_TI, callback: atrial.precued, 
+				loop: false});
 	}
 }
 
 class Experiment extends Phaser.Scene {
 	constructor ()
 	{
-		super({key: 'Expriment', active: false});
+		super({key: 'Experiment', active: false});
 	}
 
 	create()
@@ -86,7 +115,7 @@ class Experiment extends Phaser.Scene {
 		graphics.fillRect(100, 200, 600, 300);
 		graphics.fillRect(200, 100, 100, 100);
 
-		this.add.text(220, 110, 'B', {font: '96[x Courier', 
+		this.add.text(220, 110, 'B', {font: '96px Courier', 
 			fill: '#000000' });
 	}
 }

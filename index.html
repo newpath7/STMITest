@@ -1,14 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
+<!-- <script src="js/phaser.min.js"></script> -->
 <script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
 <script src="js/main.js"></script>
 <style type="text/css">
 div#gamearea { 
 	border: 1px solid red;
+	float: left;
 }
+div#inputarea {
+	width: 520px;
+	height: 600px;
+	float: right;
+}
+div#traininst {
+	width: 520px;
+	height: 600px;
+	display: none;
+}
+div#itrainstats {
+	width: 30ex;
+	border: 1px solid blue;
+}
+</style>
 </head>
 <body>
 <div id="gamearea"></div>
+<div id="inputarea">
+ <div id="traininst">
+	 Press <b>Y</b> if cued rectangle indicated by yellow line has changed orientation<br />
+	 Press <b>N</b> if cued rectangle indicated by yellow line has changed orientation<br />
+	 Trial <span id="triali">0</span> of <span id="trialn">0</span>
+ </div>
+</div>
 </body>
 </html>

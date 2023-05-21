@@ -8,17 +8,17 @@
  */
 
 
-var dply_dst = 30;  // we are this much inches from display
-var dply_diag = 15.5;	// display diagonal in inches
+var dply_dst = document.getElementById('eyedist').value;  // we are this much inches from display
 //var dply_wpx = window.innerWidth * window.devicePixelRatio;
 var dply_wpx = window.innerWidth;
 //var dply_hpx = window.innerHeight * window.devicePixelRatio;
 var dply_hpx = window.innerHeight;
+var dply_diag = document.getElementById('diaglen').value; // display diagonal in inches
 var ppi = Math.sqrt((dply_wpx * dply_wpx) + (dply_hpx * dply_hpx)) / dply_diag;
 var ppd = dply_dst * (Math.PI/180)/ (1/ppi);  // pixels per degree
-var canvwidth = 800;
+var canvwidth = document.getElementById('gamearea').getBoundingClientRect().width;
+var canvheight = document.getElementById('gamearea').getBoundingClientRect().height;
 var centerx = canvwidth / 2;
-var canvheight = 600;
 var centery = canvheight / 2;
 
 var LETTERS = ["B", "C", "D", "E", "F", "G", "J", "K",
@@ -53,6 +53,7 @@ class gameStats {
     constructor() {
 	this.TrainActual = [];
 	this.TrainAnswered = [];
+      this.ExpResponse = [];
     }
  }
  

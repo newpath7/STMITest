@@ -133,12 +133,28 @@ export class Experiment extends Phaser.Scene {
 	    /* for response display */
 	 
 	    var response_container = this.add.container();
+            var response_containert = this.add.container();
+          var certain_container = this.add.container();
 	    response_container.setName("response");
+            response_container.setName("responset");
+          certain_container.setName("certain");
+          var recentert;
+
+          for (let i = 200, j = 1; i <= 500; i += 100, j++) {
+            let rec = new Phaser.GameObjects.Rectangle(this, i, 300, ppd, ppd);
+            rec.setStrokeStyle(2, 0xffffff);
+            recentert = rec.getCenter();
+            certain_container.add(new Phaser.GameObjects.Text(this, recentert.x - 15, recentert.y, j, { fontFamily: 'Arial', align: 'center', fontSize: 15, color: '#ffffff' }).setName("certain").setInteractive());
+            certain_container.add(rec);
+          }
+          certain_container.setVisible(false);
 
 	    for (let i = 200; i < 500; i += 100) {
 		let rec = new Phaser.GameObjects.Rectangle(this, i,
 							   300, ppd, ppd);
 		rec.setStrokeStyle(2, 0xffffff);
+	    recentert = rec.getCenter();
+              response_containert.add( new Phaser.GameObjects.Text(this, recentert.x - 15, recentert.y, "A", { fontFamily: 'Arial', align: 'center', fontSize: 15, color: '#ffffff' }).setInteractive());
 		response_container.add(rec);
 	    }
 
@@ -146,6 +162,8 @@ export class Experiment extends Phaser.Scene {
 		let rec = new Phaser.GameObjects.Rectangle(this, i,
 							   400, ppd, ppd);
 		rec.setStrokeStyle(2, 0xffffff);
+	    recentert = rec.getCenter();
+              response_containert.add( new Phaser.GameObjects.Text(this, recentert.x - 15, recentert.y,"A", { fontFamily: 'Arial', align: 'center', fontSize: 15, color: '#ffffff' }).setInteractive());
 		response_container.add(rec);
 	    }
 	    let rec = new Phaser.GameObjects.Rectangle(this, 300, 500,
@@ -153,11 +171,29 @@ export class Experiment extends Phaser.Scene {
 	    rec.setStrokeStyle(2, 0xffffff);
 	    let recenter = rec.getCenter();
 	    response_container.add(rec);
+          response_container.add(response_containert);
 	    response_container.setVisible(false);
 	    let ntext = new Phaser.GameObjects.Text(this, recenter.x - 30, recenter.y,
 						    "None of These", { fontFamily: 'Arial', align: 'center', fontSize: 15, color: '#ffffff' });
 	    response_container.add(ntext);
 	    this.response_container = response_container;
+          this.response_containert = response_containert;
+          this.certain_container = certain_container;
+          this.input.on('pointerdown', function (pointer, gameObjects) {
+            gameObjects.forEach((child) => {
+              if (child.name == "certain") {
+                gamestats.ExpResponse[gamestats.ExpResponse.length - 1].certain = parseInt(child.text);
+                this.scene.certain_container.setVisible(false);
+                this.scene.runningtrial = false;
+                } else {
+              gamestats.ExpResponse.push({chose: child.text,
+                                          context: child.getData('context')
+                                            });
+            this.scene.response_container.setVisible(false);
+                  this.scene.certain_container.setVisible(true);
+                }
+            });
+          });
  	}
     
     memDisplay(thetrial) {
@@ -397,11 +433,20 @@ export class Experiment extends Phaser.Scene {
 	});
 	console.log("select a target");
 	console.log(thetrial.memletters + ', ' + thetrial.nonmemletters + ', ' + thetrial.targetl + ', iscritical = ' + thetrial.iscritical);
+      let respch = thetrial.memletters.concat(thetrial.nonmemletters, [thetrial.targetl]);
+      respch = Phaser.Utils.Array.Shuffle(respch);
+      let dcontext = {targetl: thetrial.targetl, iscritical: thetrial.iscritical,
+                     trialtyp: thetrial.trialtyp, targtyp: thetrial.targtyp};
+      this.response_containert.list.forEach((child, i) => {
+         child.setText(respch[i]);
+        child.setData("context", dcontext);
+}); 
 	this.response_container.setVisible(true);
     }
     
     update () {
 	if (!this.notstarted && !this.runningtrial) { 
+console.log(gamestats.ExpResponse);
 	    if (this.trialn < TRIALS_PER_BLOCK) {
 		this.trialn++;
 		this.runningtrial = true;

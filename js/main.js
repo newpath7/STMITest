@@ -9,8 +9,8 @@ let config = {
 	backgrondColor: '#000000',
 	parent: 'gamearea',
 	input: { queue: true },
-    //    scene: [Train, Experiment]
-    scene: [Experiment]
+    scene: [Train, Experiment]
+    //scene: [Experiment]
 };
 game = new Phaser.Game(config);
 

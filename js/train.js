@@ -41,8 +41,8 @@ function showTrainResults() {
 		table += outtable + '</table><br />';
 
 		if (cpercent > 75) {
-		    table += '<br />You are ready for actual experiment';
-		    game.scene.switch("Train", "Experiment");
+		    table += '<br />You are ready for the actual experiment.<br />By pressing C these stats will be cleared and the actual experiment will begin.<br />Immediately, a screen with letters will flash, which you will be tested on after other flashes. These other flashes will either indicate which letter or try to interfere.';
+		    //		    game.scene.switch("Train", "Experiment");
 		} else {
 				table += '<br />More training required. Refresh (F5) to restart.';
 		}
@@ -150,16 +150,17 @@ class TrainTrial {
 export class Train extends Phaser.Scene {
 	constructor ()
 	{
-		super({key: 'Train', active: true});
-		this.numtrials = NUM_TRAINTRIALS;
-		this.endoftrial = true;
+	    super({key: 'Train', active: true});
+	    this.numtrials = NUM_TRAINTRIALS;
+	    this.endoftrial = true;
+	    this.endoftraining = false;
 	}
 
 	update ()
 	{
 		if (this.endoftrial == true && this.numtrials > 0) {
 			this.time.addEvent({delay: TRIAL_TI, callback: () => {
-				document.querySelector("span#triali").innerHTML = NUM_TRAINTRIALS - this.numtrials;
+				document.querySelector("span#triali").innerHTML = NUM_TRAINTRIALS - this.numtrials + 1;
 				let atrial = new TrainTrial(this);
 				atrial.memdisplay(this);
 				let mdcue = Phaser.Math.RND.between(MDCUE_TI_MIN, MDCUE_TI_MAX);
@@ -169,10 +170,10 @@ export class Train extends Phaser.Scene {
 		 		this.time.addEvent({delay: MD_TI, callback: atrial.precued, 
 				 	callbackScope: atrial,
 				 	loop: false});
-				}, callbackScope: this, loop:false});
-				this.numtrials--;
-				this.endoftrial = false;
-			}
+			}, callbackScope: this, loop:false});
+		    //this.numtrials--;
+		    this.endoftrial = false;
+		}
 	}
 
 	create ()
@@ -185,32 +186,43 @@ export class Train extends Phaser.Scene {
 	    console.log("here is " + NUM_TRAINTRIALS);
 		document.querySelector("span#trialn").innerHTML = NUM_TRAINTRIALS;
 		let traininst = document.querySelector('#traininst');
-		traininst.style.display = "block";
-
+	    traininst.style.display = "block";
+	    
+	    this.input.keyboard.on('keydown-C', event => {
+		console.log("C is down and endoftrainig is " + this.endoftraining);
+		if (this.endoftraining == true) {
+		    console.log("stopping train scene and startig experiment scene");
+		    document.getElementById("traininst").remove();
+		    let experimentinst = document.querySelector('#experimentinst');
+		    experimentinst.style.display = "block";
+		    this.scene.start("Experiment");
+		}
+	    });
+	    
 		 this.input.keyboard.on('keydown-Y', event => {
 				 if (this.endoftrial == false) {
-					this.numoftrials--;
+					this.numtrials--;
 					gamestats.TrainAnswered.push(true);
 
 					if (this.numtrials > 0) {
-						this.endoftrial = true;
+					    this.endoftrial = true;
 						setRecVisible(false, true);
 					} else {
-						console.log("Train trials done");
-						showTrainResults();
+					    this.endoftraining = true;
+					    showTrainResults();
 					}
 				}
 		 });
 		 this.input.keyboard.on('keydown-N', event => {
 				 if (this.endoftrial == false) {
-						this.numoftrials--;
+						this.numtrials--;
 						gamestats.TrainAnswered.push(false);
 
 						 if (this.numtrials > 0) {
 							this.endoftrial = true;
 							setRecVisible(false, true);
 						 } else {
-							console.log("Train trials done");
+						     this.endoftraining = true;
 							showTrainResults();
 						 }
 				 }

@@ -95,7 +95,7 @@ class ExperimentTrial {
 export class Experiment extends Phaser.Scene {
 	constructor ()
 	{
-	    super({key: 'Experiment', active: true});
+	    super({key: 'Experiment', active: false});
 	    this.notstarted = true;
 	    this.runningtrial = false;
 	    this.sessionn = 0;
@@ -109,11 +109,14 @@ export class Experiment extends Phaser.Scene {
 	{
 	    var rln = Math.trunc(0.75 * TRIALS_PER_BLOCK);
 	    var pln = TRIALS_PER_BLOCK - rln;
+	    document.querySelector('#session').innerHTML = SESSIONS_PER_GAME;
+	    document.querySelector('#blockn').innerHTML = BLOCKS_PER_SESSION;
+	    document.querySelector('#trialn').innerHTML = TRIALS_PER_BLOCK;
 	    
 	    for (let sessn = 0; sessn < SESSIONS_PER_GAME; sessn++)
 	    {
 		this.thetrials[sessn] = [];
-		
+
 		for (let blockn = 0; blockn < BLOCKS_PER_SESSION; blockn++) {
 		    this.thetrials[sessn][blockn] = [];
 
@@ -140,8 +143,9 @@ export class Experiment extends Phaser.Scene {
           certain_container.setName("certain");
           var recentert;
 
-          for (let i = 200, j = 1; i <= 500; i += 100, j++) {
-            let rec = new Phaser.GameObjects.Rectangle(this, i, 300, ppd, ppd);
+            for (let i = RESP_STARTX, j = 1; i <= RESP_ENDX;
+		 i += RESP_INCX, j++) {
+            let rec = new Phaser.GameObjects.Rectangle(this, i, RESP_STARTY, ppd, ppd);
             rec.setStrokeStyle(2, 0xffffff);
             recentert = rec.getCenter();
             certain_container.add(new Phaser.GameObjects.Text(this, recentert.x - 15, recentert.y, j, { fontFamily: 'Arial', align: 'center', fontSize: 15, color: '#ffffff' }).setName("certain").setInteractive());
@@ -149,25 +153,25 @@ export class Experiment extends Phaser.Scene {
           }
           certain_container.setVisible(false);
 
-	    for (let i = 200; i < 500; i += 100) {
+	    for (let i = RESP_STARTX; i < RESP_ENDX; i += RESP_INCX) {
 		let rec = new Phaser.GameObjects.Rectangle(this, i,
-							   300, ppd, ppd);
+							   RESP_STARTY, ppd, ppd);
 		rec.setStrokeStyle(2, 0xffffff);
 	    recentert = rec.getCenter();
               response_containert.add( new Phaser.GameObjects.Text(this, recentert.x - 15, recentert.y, "A", { fontFamily: 'Arial', align: 'center', fontSize: 15, color: '#ffffff' }).setInteractive());
 		response_container.add(rec);
 	    }
 
-	    for (let i = 200; i < 500; i += 100) {
+	    for (let i = RESP_STARTX; i < RESP_ENDX; i += RESP_INCX) {
 		let rec = new Phaser.GameObjects.Rectangle(this, i,
-							   400, ppd, ppd);
+				RESP_STARTY + RESP_INCY, ppd, ppd);
 		rec.setStrokeStyle(2, 0xffffff);
 	    recentert = rec.getCenter();
               response_containert.add( new Phaser.GameObjects.Text(this, recentert.x - 15, recentert.y,"A", { fontFamily: 'Arial', align: 'center', fontSize: 15, color: '#ffffff' }).setInteractive());
 		response_container.add(rec);
 	    }
-	    let rec = new Phaser.GameObjects.Rectangle(this, 300, 500,
-						       200, ppd);
+	    let rec = new Phaser.GameObjects.Rectangle(this, RESP_NONEX,
+				RESP_NONEY, RESP_NONELEN, ppd);
 	    rec.setStrokeStyle(2, 0xffffff);
 	    let recenter = rec.getCenter();
 	    response_container.add(rec);
@@ -183,8 +187,13 @@ export class Experiment extends Phaser.Scene {
             gameObjects.forEach((child) => {
               if (child.name == "certain") {
                 gamestats.ExpResponse[gamestats.ExpResponse.length - 1].certain = parseInt(child.text);
-                this.scene.certain_container.setVisible(false);
-                this.scene.runningtrial = false;
+                  this.scene.certain_container.setVisible(false);
+		  		      let er = gamestats.ExpResponse[gamestats.ExpResponse.length - 1];
+		  document.querySelector("#etr").style.display = "block";
+		      document.querySelector("#etr").innerHTML = er.context.targetl == er.chose ? "correct" : "wrong";
+                  setTimeout(() => { 
+		      this.scene.runningtrial = false;
+				   }, SEE_TRIAL_RESULT_DELAY);  /* to get mouse out of the way and see result */
                 } else {
               gamestats.ExpResponse.push({chose: child.text,
                                           context: child.getData('context')
@@ -201,7 +210,8 @@ export class Experiment extends Phaser.Scene {
 	var pmv = new Phaser.Math.Vector2(0, 0);
 	var mem_container = thetrial.phaserscene.add.container();
 	mem_container.setName("letters");
-
+	document.querySelector("#etr").style.display = "none";
+	
 	switch (thetrial.memtype) {
 	case "5l1pl":
 	    for (let i = 0; i < 5; i++) {	
@@ -449,15 +459,18 @@ export class Experiment extends Phaser.Scene {
 console.log(gamestats.ExpResponse);
 	    if (this.trialn < TRIALS_PER_BLOCK) {
 		this.trialn++;
+		document.querySelector("#triali").innerHTML = this.trialn;
 		this.runningtrial = true;
 		this.memDisplay(this.thetrials[this.sessionn][this.blockn][this.trialn]);
 	    } else {
 		if (this.blockn < BLOCKS_PER_SESSION) {
 		    this.blockn++;
+		    document.querySelector("#blocki").innerHTML = this.blockn + 1;
 		    this.trialn = 0;
 		} else {
 		    if (this.sessionn < SESSIONS_PER_GAME) {
 			this.sessionn++;
+			document.querySelector("#sessioni").innerHTML = this.sessionn + 1;
 			this.blockn = 0;
 			this.trialn = 0;
 		    }

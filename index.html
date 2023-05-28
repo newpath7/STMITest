@@ -6,7 +6,7 @@ html, body { height: 90%; }
 div#gamearea { 
 	border: 1px solid red;
 	float: left;
-        width: 70%;
+        width: 65%;
         height: 100%;
         min-height: 100%;
         height: auto;
@@ -19,18 +19,19 @@ div#inputarea {
     width: 30%;
 	float: right;
 }
-div#traininst {
+div#traininst, div#experimentinst {
 /*
 	width: 520px;
 	height: 600px;
 */
-    width: 30%;
+    width: 100%;
 	display: none;
 }
-div#itrainstats {
+div#itrainstats, div#iexperimentstats, div#etr {
 	width: 30ex;
 	border: 1px solid blue;
 }
+
 input#eyedist, input#diaglen {
 	width: 4ex;
 }
@@ -44,13 +45,18 @@ input#eyedist, input#diaglen {
 	 Press <b>N</b> if cued rectangle indicated by yellow line has changed orientation<br />
 	 Trial <span id="triali">0</span> of <span id="trialn">0</span>
  </div>
+ <div id="experimentinst">
+   At the end of each trial click on the letter that cued by the yellow rectangle, then select your level of confidence for this selection, where 1 means least confident, and 4 means most confident. A summmary of the results will appear after completion of the sessions.<br /> 
+   Trial <span id="triali">1</span> / <span id="trialn">0</span> of block <span id="blocki">1</span> / <span id="blockn">0</span> of session <span id="sessioni">1</span> / <span id="session">0</span><br />
+      <div id="etr">..</div>
+   </div>
 </div>
 <div style="clear: both;" /></div>
 Diagonal length of screen in inches: <input type="text" id="diaglen" value="15.5" /><br />
 Distance of eyes away from display in inches: <input type="text" id="eyedist" value="30" /><br />
 <br /><button id="refresh" onclick="window.location.reload()">Reload entire game with above 2 settings</button></div>
 <!-- <script src="js/phaser.min.js"></script> -->
-<script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script> 
 <script type="module" src="js/train.js"></script>
 <script type="module" src="js/experiment.js"></script>
 <script type="module" src="js/main.js"></script>

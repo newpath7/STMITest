@@ -12,7 +12,7 @@ var dply_dst = document.getElementById('eyedist').value;  // we are this much in
 //var dply_wpx = window.innerWidth * window.devicePixelRatio;
 var dply_wpx = window.innerWidth;
 //var dply_hpx = window.innerHeight * window.devicePixelRatio;
-var dply_hpx = window.innerHeight;
+var dply_hpx = window.innerHeight * 0.2; 
 var dply_diag = document.getElementById('diaglen').value; // display diagonal in inches
 var ppi = Math.sqrt((dply_wpx * dply_wpx) + (dply_hpx * dply_hpx)) / dply_diag;
 var ppd = dply_dst * (Math.PI/180)/ (1/ppi);  // pixels per degree
@@ -46,7 +46,18 @@ const MDCUE_TI_MIN = 100;		// min memory display to cue
 const MDCUE_TI_MAX = 1000;	// max memory display to cue
 const CD_TI = 500;		// cue display	
 
-const NUM_TRAINTRIALS = 5;
+const RESP_STARTX = 200;
+const RESP_ENDX = 500;
+const RESP_INCX = 100;
+const RESP_INCY = 100;
+const RESP_STARTY = 150;
+const RESP_NONEX = 350;
+const RESP_NONEY = 350;
+const RESP_NONELEN = 200;
+
+const SEE_TRIAL_RESULT_DELAY = 5000;
+
+const NUM_TRAINTRIALS = 10;
 
 
 class gameStats {

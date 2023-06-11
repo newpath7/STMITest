@@ -30,10 +30,15 @@ const pause_fac = 1;
 const TRIAL_TYPE_PAUSES = [[250 * pause_fac, 750 * pause_fac, 500 * pause_fac, 0, 0],
 	[250 * pause_fac, 750 * pause_fac, 500 * pause_fac, 3750 * pause_fac, 500 * pause_fac],
 	[250 * pause_fac, 3000 * pause_fac, 500 * pause_fac, 1500 * pause_fac, 500 * pause_fac]];
-
+/*
 const SESSIONS_PER_GAME = 2;
 const BLOCKS_PER_SESSION = 18;
 const TRIALS_PER_BLOCK = 24;
+*/
+
+const SESSIONS_PER_GAME = 2;
+const BLOCKS_PER_SESSION = 2;
+const TRIALS_PER_BLOCK = 3;
 
 const RECT_VERT = 1;
 const RECT_HORZ = 2;
@@ -55,10 +60,11 @@ const RESP_NONEX = 350;
 const RESP_NONEY = 350;
 const RESP_NONELEN = 200;
 
-const SEE_TRIAL_RESULT_DELAY = 5000;
+const SEE_TRIAL_RESULT_DELAY = 2000;
 
-const NUM_TRAINTRIALS = 10;
+const NUM_TRAINTRIALS = 2;
 
+const NOOFTH = "None of These"; /* response selection option */
 
 class gameStats {
     constructor() {

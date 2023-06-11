@@ -4,7 +4,7 @@
 <style type="text/css">
 html, body { height: 90%; }
 div#gamearea { 
-	border: 1px solid red;
+/*	border: 1px solid red;  */
 	float: left;
         width: 65%;
         height: 100%;
@@ -42,11 +42,11 @@ input#eyedist, input#diaglen {
 <div id="inputarea">
  <div id="traininst">
 	 Press <b>Y</b> if cued rectangle indicated by yellow line has changed orientation<br />
-	 Press <b>N</b> if cued rectangle indicated by yellow line has changed orientation<br />
+	 Press <b>N</b> if cued rectangle indicated by yellow line has not changed orientation<br />
 	 Trial <span id="triali">0</span> of <span id="trialn">0</span>
  </div>
  <div id="experimentinst">
-   At the end of each trial click on the letter that cued by the yellow rectangle, then select your level of confidence for this selection, where 1 means least confident, and 4 means most confident. A summmary of the results will appear after completion of the sessions.<br /> 
+   At the end of each trial click on the letter that was cued by the yellow rectangle, then select your level of confidence for this selection, where 1 means least confident, and 4 means most confident. A summmary of the results will appear after completion of the sessions.<br /> 
    Trial <span id="triali">1</span> / <span id="trialn">0</span> of block <span id="blocki">1</span> / <span id="blockn">0</span> of session <span id="sessioni">1</span> / <span id="session">0</span><br />
       <div id="etr">..</div>
    </div>
@@ -54,7 +54,7 @@ input#eyedist, input#diaglen {
 <div style="clear: both;" /></div>
 Diagonal length of screen in inches: <input type="text" id="diaglen" value="15.5" /><br />
 Distance of eyes away from display in inches: <input type="text" id="eyedist" value="30" /><br />
-<br /><button id="refresh" onclick="window.location.reload()">Reload entire game with above 2 settings</button></div>
+<br /><button id="refresh" onclick="window.location.reload()">Reload entire game with above settings</button></div>
 <!-- <script src="js/phaser.min.js"></script> -->
 <script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script> 
 <script type="module" src="js/train.js"></script>

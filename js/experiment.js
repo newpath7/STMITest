@@ -1,5 +1,7 @@
 class ExperimentTrial {
     constructor(s, targtyp) {
+	this.correct = false;
+	this.certain = 0;
 	this.iscritical = false;
 	this.phaserscene = s;
 	this.targtyp = targtyp;
@@ -13,9 +15,10 @@ class ExperimentTrial {
     }
 
     setResponseDisplay() {
-	this.nonmemletters = this.uletters.slice(0, 3);
-	let tmpcp = this.letters.map((x) => x);
-	this.memletters = Phaser.Utils.Array.Shuffle(tmpcp.filter(i => i != this.targeti)).slice(0, 2);
+	let tmpcp = this.uletters.map((x) => x);
+	this.nonmemletters = tmpcp.filter(i => i != this.targetl).slice(0, 3);
+	tmpcp = this.letters.map((x) => x);
+	this.memletters = Phaser.Utils.Array.Shuffle(tmpcp.filter(i => i != this.targetl)).slice(0, 2);
 	var randn = Phaser.Math.RND.between(1, 100);
 	
 	if (this.targtyp == "real") {
@@ -145,62 +148,81 @@ export class Experiment extends Phaser.Scene {
 
             for (let i = RESP_STARTX, j = 1; i <= RESP_ENDX;
 		 i += RESP_INCX, j++) {
-            let rec = new Phaser.GameObjects.Rectangle(this, i, RESP_STARTY, ppd, ppd);
+		let rec = new Phaser.GameObjects.Rectangle(this, i, RESP_STARTY, ppd, ppd).setInteractive({useHandCursor: true});
             rec.setStrokeStyle(2, 0xffffff);
-            recentert = rec.getCenter();
-            certain_container.add(new Phaser.GameObjects.Text(this, recentert.x - 15, recentert.y, j, { fontFamily: 'Arial', align: 'center', fontSize: 15, color: '#ffffff' }).setName("certain").setInteractive());
+		recentert = rec.getCenter();
+		let textobj = new Phaser.GameObjects.Text(this, recentert.x - 15, recentert.y, j, { fontFamily: 'Arial', align: 'center', fontSize: 15, color: '#ffffff' }).setName("certain");
+		rec.setData("childo", textobj);
+		certain_container.add(textobj);
             certain_container.add(rec);
           }
           certain_container.setVisible(false);
 
 	    for (let i = RESP_STARTX; i < RESP_ENDX; i += RESP_INCX) {
 		let rec = new Phaser.GameObjects.Rectangle(this, i,
-							   RESP_STARTY, ppd, ppd);
+							   RESP_STARTY, ppd, ppd).setInteractive({useHandCursor: true});
 		rec.setStrokeStyle(2, 0xffffff);
-	    recentert = rec.getCenter();
-              response_containert.add( new Phaser.GameObjects.Text(this, recentert.x - 15, recentert.y, "A", { fontFamily: 'Arial', align: 'center', fontSize: 15, color: '#ffffff' }).setInteractive());
+		recentert = rec.getCenter();
+		let textobj = new Phaser.GameObjects.Text(this, recentert.x - 15, recentert.y, "A", { fontFamily: 'Arial', align: 'center', fontSize: 15, color: '#ffffff' });
+		response_containert.add(textobj);
+		rec.setData("childo", textobj); 
 		response_container.add(rec);
 	    }
 
 	    for (let i = RESP_STARTX; i < RESP_ENDX; i += RESP_INCX) {
 		let rec = new Phaser.GameObjects.Rectangle(this, i,
-				RESP_STARTY + RESP_INCY, ppd, ppd);
+				RESP_STARTY + RESP_INCY, ppd, ppd).setInteractive({useHandCursor: true});
 		rec.setStrokeStyle(2, 0xffffff);
-	    recentert = rec.getCenter();
-              response_containert.add( new Phaser.GameObjects.Text(this, recentert.x - 15, recentert.y,"A", { fontFamily: 'Arial', align: 'center', fontSize: 15, color: '#ffffff' }).setInteractive());
+		recentert = rec.getCenter();
+		let textobj = new Phaser.GameObjects.Text(this, recentert.x - 15, recentert.y,"A", { fontFamily: 'Arial', align: 'center', fontSize: 15, color: '#ffffff' });
+		response_containert.add(textobj);
+		rec.setData("childo", textobj);
 		response_container.add(rec);
 	    }
 	    let rec = new Phaser.GameObjects.Rectangle(this, RESP_NONEX,
-				RESP_NONEY, RESP_NONELEN, ppd);
+				RESP_NONEY, RESP_NONELEN, ppd).setInteractive({useHandCursor: true});
 	    rec.setStrokeStyle(2, 0xffffff);
+	    rec.setName("nonerecc");
 	    let recenter = rec.getCenter();
+	    let ntext = new Phaser.GameObjects.Text(this, recenter.x - 30, recenter.y, NOOFTH, { fontFamily: 'Arial', align: 'center', fontSize: 15, color: '#ffffff' });
+	    rec.setData("childo", ntext);
 	    response_container.add(rec);
-          response_container.add(response_containert);
+            response_container.add(response_containert);
 	    response_container.setVisible(false);
-	    let ntext = new Phaser.GameObjects.Text(this, recenter.x - 30, recenter.y,
-						    "None of These", { fontFamily: 'Arial', align: 'center', fontSize: 15, color: '#ffffff' });
 	    response_container.add(ntext);
 	    this.response_container = response_container;
           this.response_containert = response_containert;
           this.certain_container = certain_container;
           this.input.on('pointerdown', function (pointer, gameObjects) {
-            gameObjects.forEach((child) => {
-              if (child.name == "certain") {
+              gameObjects.forEach((ochild) => {
+		  let child = ochild.getData("childo");
+
+		  if (child.name == "certain") {
+		      		  console.log(child.name + " - " + child.text);
                 gamestats.ExpResponse[gamestats.ExpResponse.length - 1].certain = parseInt(child.text);
                   this.scene.certain_container.setVisible(false);
-		  		      let er = gamestats.ExpResponse[gamestats.ExpResponse.length - 1];
-		  document.querySelector("#etr").style.display = "block";
-		      document.querySelector("#etr").innerHTML = er.context.targetl == er.chose ? "correct" : "wrong";
-                  setTimeout(() => { 
+		  let er = gamestats.ExpResponse[gamestats.ExpResponse.length - 1];
+		      document.querySelector("#etr").style.display = "block";
+		      if (er.context.iscritical == true) {
+			  document.querySelector("#etr").innerHTML = er.chose == NOOFTH ? "Correct" : "Wrong";
+			  gamestats.ExpResponse[gamestats.ExpResponse.length - 1].correct = er.chose == NOOFTH ? true : false;
+		      } else {
+			  document.querySelector("#etr").innerHTML = er.context.targetl == er.chose ? "Correct" : "Wrong";
+			  gamestats.ExpResponse[gamestats.ExpResponse.length - 1].correct = er.chose == er.context.targetl ? true : false;
+		      }
+		/*      document.querySelector("#etr").innerHTML += ": you chose " + er.chose + " and actual letter was " + er.context.targetl + " (iscritical:" + er.context.iscritical + ", type: " + er.context.targtyp + ", rflip:" + er.context.rflip + ")"; */
+		      		  setTimeout(() => { 
 		      this.scene.runningtrial = false;
 				   }, SEE_TRIAL_RESULT_DELAY);  /* to get mouse out of the way and see result */
-                } else {
-              gamestats.ExpResponse.push({chose: child.text,
+                  } else {
+		      gamestats.ExpResponse.push({chose: child.text,
+						  certain: 100,
+						  correct: false,
                                           context: child.getData('context')
                                             });
-            this.scene.response_container.setVisible(false);
+		    this.scene.response_container.setVisible(false);
                   this.scene.certain_container.setVisible(true);
-                }
+		  }
             });
           });
  	}
@@ -322,10 +344,8 @@ export class Experiment extends Phaser.Scene {
 	let graphics = this.add.graphics({lineStyle: {width: 5, color: 0xffff00}});
 	graphics.strokeRectShape(probrec);
 	thetrial.probe = graphics;
-	console.log("memprobe for " + thetrial.trialtyp);
 	
 	if (thetrial.trialtyp == 1) {
-	    console.log("show interference");
 	    setTimeout(() => { this.showInterference(thetrial) },
 		       TRIAL_TYPE_PAUSES[thetrial.trialtyp - 1][2]);
 	} else {
@@ -335,14 +355,12 @@ export class Experiment extends Phaser.Scene {
     }
 
     blankmemProbe(thetrial) {
-	console.log("blank memProbe");
 	thetrial.probe.destroy();
 	setTimeout(() => { this.showInterference(thetrial); },
 		   TRIAL_TYPE_PAUSES[thetrial.trialtyp - 1][3]);
     }
     
     showInterference(thetrial) {
-	console.log("showing interference");
 	var tmpl, osp, ox, oy;
 	var pmv = new Phaser.Math.Vector2(0, 0);
 	var imem_container = thetrial.phaserscene.add.container();
@@ -441,29 +459,77 @@ export class Experiment extends Phaser.Scene {
 					child.setVisible(false);
 				}
 	});
-	console.log("select a target");
-	console.log(thetrial.memletters + ', ' + thetrial.nonmemletters + ', ' + thetrial.targetl + ', iscritical = ' + thetrial.iscritical);
       let respch = thetrial.memletters.concat(thetrial.nonmemletters, [thetrial.targetl]);
-      respch = Phaser.Utils.Array.Shuffle(respch);
+	respch = Phaser.Utils.Array.Shuffle(respch);
+	// flip if PL and not critical OR if is real letter and critical
+	thetrial.rflip = false;
+	if (thetrial.targtyp == "real") {
+	    if (thetrial.iscritical) {
+		thetrial.rflip = true;
+	    }
+	} else {
+	    if (!thetrial.iscritical) {
+		thetrial.rflip = true;
+	    }
+	}
       let dcontext = {targetl: thetrial.targetl, iscritical: thetrial.iscritical,
-                     trialtyp: thetrial.trialtyp, targtyp: thetrial.targtyp};
-      this.response_containert.list.forEach((child, i) => {
+                      trialtyp: thetrial.trialtyp, targtyp: thetrial.targtyp,
+		      rflip: thetrial.rflip};
+	this.response_containert.list.forEach((child, i) => {
+	    child.resetFlip();
+	    if (respch[i] == thetrial.targetl) {
+		if (dcontext.rflip == true) {
+		    child.setFlipX(true);
+		}
+	    }
          child.setText(respch[i]);
         child.setData("context", dcontext);
-}); 
+	});
+	
+	this.response_container.list.forEach((child, i) => {
+	    if (child.name == "nonerecc") {
+		let tmp = child.getData("childo");
+		tmp.setData("context", dcontext);
+		child.setData("childo", tmp);
+	    }
+	});
 	this.response_container.setVisible(true);
+    }
+
+    preDestroy() {
+	let stathtml = '<table><tr><th>chose</th><th>actual answer</th>';
+	stathtml += '<th>actual flipped</th>';
+	stathtml += '<th>Is critical?</th><th>Your certainty</th><th>C/W</th></tr>';
+	gamestats.ExpResponse.forEach((child) => {
+	    stathtml += '<tr>';
+	    let chose = child.chose;
+	    let context = child.context;
+	    stathtml += '<td>' + chose + '</td><td>' + context.targetl + '</td>';
+	    stathtml += '<td>' + context.rflip + '</td>';
+	    stathtml += '<td>' + context.iscritical + '</td>';
+	    stathtml += '<td>' + child.certain + '</td>';
+	    stathtml += '<td>' + child.correct + '</td>';
+	    stathtml += '</tr>';
+	});
+	stathtml += '</table>';
+	document.querySelector("#etr").innerHTML = stathtml;	      
     }
     
     update () {
 	if (!this.notstarted && !this.runningtrial) { 
-console.log(gamestats.ExpResponse);
-	    if (this.trialn < TRIALS_PER_BLOCK) {
-		this.trialn++;
-		document.querySelector("#triali").innerHTML = this.trialn;
+	    if (this.sessionn >= SESSIONS_PER_GAME) {
+		this.preDestroy();
+		this.sys.game.destroy();
+		return;
+	    }
+	    
+	    if (this.trialn < TRIALS_PER_BLOCK && this.blockn < BLOCKS_PER_SESSION && this.sessionn < SESSIONS_PER_GAME) {
+		document.querySelector("#triali").innerHTML = this.trialn + 1;
 		this.runningtrial = true;
 		this.memDisplay(this.thetrials[this.sessionn][this.blockn][this.trialn]);
+		this.trialn++;
 	    } else {
-		if (this.blockn < BLOCKS_PER_SESSION) {
+		if (this.blockn < BLOCKS_PER_SESSION && this.session < SESSIONS_PER_GAME) {
 		    this.blockn++;
 		    document.querySelector("#blocki").innerHTML = this.blockn + 1;
 		    this.trialn = 0;
@@ -473,6 +539,11 @@ console.log(gamestats.ExpResponse);
 			document.querySelector("#sessioni").innerHTML = this.sessionn + 1;
 			this.blockn = 0;
 			this.trialn = 0;
+		    }
+		    else {
+			this.preDestroy();
+			this.sys.game.destroy();
+			return;
 		    }
 		}
 	    }

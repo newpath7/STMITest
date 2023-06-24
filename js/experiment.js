@@ -497,10 +497,17 @@ export class Experiment extends Phaser.Scene {
     }
 
     preDestroy() {
-	let stathtml = '<table><tr><th>chose</th><th>actual answer</th>';
+/*	let stathtml = '<table><tr><th>chose</th><th>actual answer</th>';
 	stathtml += '<th>actual flipped</th>';
-	stathtml += '<th>Is critical?</th><th>Your certainty</th><th>C/W</th></tr>';
+	stathtml += '<th>Is critical?</th><th>Your certainty</th><th>C/W</th><th>Trial type</th></tr>'; */
+	let resummary = {"rloerror": [{cvalue: 0, evalue: 0}, {cvalue: 0, evalue: 0}, {cvalue: 0, evalue: 0}],
+			 "rlillusion": [{cvalue: 0, evalue: 0}, {cvalue: 0, evalue: 0}, {cvalue: 0, evalue: 0}],
+			 "ploerror": [{cvalue: 0, evalue: 0}, {cvalue: 0, evalue: 0}, {cvalue: 0, evalue: 0}],
+			 "plillusion": [{cvalue: 0, evalue: 0}, {cvalue: 0, evalue: 0}, {cvalue: 0, evalue: 0}]}
+	let curkey = "";
+	let hcct = 0;
 	gamestats.ExpResponse.forEach((child) => {
+	    /*
 	    stathtml += '<tr>';
 	    let chose = child.chose;
 	    let context = child.context;
@@ -509,10 +516,89 @@ export class Experiment extends Phaser.Scene {
 	    stathtml += '<td>' + context.iscritical + '</td>';
 	    stathtml += '<td>' + child.certain + '</td>';
 	    stathtml += '<td>' + child.correct + '</td>';
+	    stathtml += '<td>' + context.trialtyp + '</td>';
 	    stathtml += '</tr>';
+	    */
+	    let context = child.context;
+	    
+	    if (child.certain == 4) {
+		if (context.iscritical) {
+		    curkey = "illusion";
+		    hcct++;
+		} else {
+		    curkey = "oerror";
+		}
+
+		if (context.rflip) {
+		    curkey = "pl" + curkey;
+		} else {
+		    curkey = "rl" + curkey;
+		}
+		console.log(curkey + " ~~ " + context.trialtyp);
+		if (child.correct) {
+		    resummary[curkey][context.trialtyp - 1].cvalue++;
+		} else {
+		    resummary[curkey][context.trialtyp - 1].evalue++;
+		}
+	    }
 	});
-	stathtml += '</table>';
-	document.querySelector("#etr").innerHTML = stathtml;	      
+	if (hcct < REQ_HCCT_MIN) {
+	    console.log("these results should be excluded from experiment result data");
+	}
+	//stathtml += '</table>';
+	//document.querySelector("#etr").innerHTML = stathtml;
+	      	require(['dojox/charting/Chart', 'dojox/charting/axis2d/Default',
+		 'dojox/charting/plot2d/ClusteredColumns',
+		 "dojox/charting/themes/Wetland",
+		 "dojox/charting/widget/Legend",
+		 "dijit/layout/ContentPane", "dojo/dom-construct",
+		 "dojo/dom", "dojo/on", "dojo/dom-style", "dojo/ready"],
+		function(Chart, Default, CharType, CharTheme,
+			 Legend, ContentPane, domConstruct,
+			 dom, on, domStyle, ready) {
+		        function cePercent(ec) {
+			    return Math.trunc(100 * (ec.evalue / (ec.evalue + ec.cvalue)));
+			}
+		    
+		    ready(function () {
+			var n = domConstruct.create("div", null, dom.byId("resummary"), "first");
+			var legend_n = domConstruct.create("div", null, n, "after");
+			var clsbtn = domConstruct.create("buton", {innerHTML: "<p>RLT = Real Letter Target<br />PLT = Pseudo Letter Target<br /><center><button id='closestat'>Close</button></center><br /><br/>"}, legend_n, "after");
+			on(clsbtn, "click", function(evt) {
+			    domConstruct.empty("resummary");
+//			    domStyle.set(dom.byId("canv"), "display", "none");
+			});
+			var chart1 = new Chart(n,
+					       {title: "Results summary (based on high confidence answers (4) only)",
+						titlePos: "top"
+					       });
+			chart1.addPlot("default", {type: CharType, markers: true,
+						   gap: 5});
+			chart1.addAxis("x", {minorLabels: false, labels:[
+			    {value: 1, text: "RLT - Short"},
+			    {value: 2, text: "RLT - Short (Interference)"},
+			    {value: 3, text: "RLT - Long"},
+			    {value: 4, text: "PLT - Short"},
+			    {value: 5, text: "PLT - Short (Interference)"},
+			    {value: 6, text: "PLT - Long"}]});
+			chart1.addAxis("y", {vertical: true, min:0, max:100, title: "Error percentage"});	
+			chart1.addSeries("Illusions", [cePercent(resummary["rlillusion"][0]),
+						       cePercent(resummary["rlillusion"][1]),
+						       cePercent(resummary["rlillusion"][2]),
+						       cePercent(resummary["plillusion"][0]),
+						       cePercent(resummary["plillusion"][1]),
+						       cePercent(resummary["plillusion"][2])]);
+			chart1.addSeries("Other errors", [cePercent(resummary["rloerror"][0]),
+							  cePercent(resummary["rloerror"][1]),
+							  cePercent(resummary["rloerror"][2]),
+							  cePercent(resummary["ploerror"][0]),
+							  cePercent(resummary["ploerror"][1]),
+							  cePercent(resummary["ploerror"][2])]);
+			chart1.setTheme(CharTheme);
+			chart1.render();
+			var legend = new Legend({chart: chart1, horizontal: true}, legend_n);
+		    });
+		});
     }
     
     update () {

@@ -183,15 +183,12 @@ export class Train extends Phaser.Scene {
 	        let fixation = new Phaser.Geom.Circle(centerx,
 						  centery, 0.4 * ppd);
 	    graphics.fillCircleShape(fixation);
-	    console.log("here is " + NUM_TRAINTRIALS);
 		document.querySelector("span#trialn").innerHTML = NUM_TRAINTRIALS;
 		let traininst = document.querySelector('#traininst');
 	    traininst.style.display = "block";
 	    
 	    this.input.keyboard.on('keydown-C', event => {
-		console.log("C is down and endoftrainig is " + this.endoftraining);
 		if (this.endoftraining == true) {
-		    console.log("stopping train scene and startig experiment scene");
 		    document.getElementById("traininst").remove();
 		    let experimentinst = document.querySelector('#experimentinst');
 		    experimentinst.style.display = "block";

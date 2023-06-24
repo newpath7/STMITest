@@ -4,7 +4,6 @@
 <style type="text/css">
 html, body { height: 90%; }
 div#gamearea { 
-/*	border: 1px solid red;  */
 	float: left;
         width: 65%;
         height: 100%;
@@ -12,20 +11,12 @@ div#gamearea {
         height: auto;
 }
 div#inputarea {
-/*
-	width: 520px;
-	height: 600px;
-*/
     width: 30%;
-	float: right;
+    float: right;
 }
 div#traininst, div#experimentinst {
-/*
-	width: 520px;
-	height: 600px;
-*/
     width: 100%;
-	display: none;
+    display: none;
 }
 div#itrainstats, div#iexperimentstats, div#etr {
 	width: 30ex;
@@ -38,7 +29,8 @@ input#eyedist, input#diaglen {
 </style>
 </head>
 <body>
-<div id="gamearea"></div>
+  <div id="resummary"></div>
+  <div id="gamearea"></div>
 <div id="inputarea">
  <div id="traininst">
 	 Press <b>Y</b> if cued rectangle indicated by yellow line has changed orientation<br />
@@ -48,18 +40,23 @@ input#eyedist, input#diaglen {
  <div id="experimentinst">
    At the end of each trial click on the letter that was cued by the yellow rectangle, then select your level of confidence for this selection, where 1 means least confident, and 4 means most confident. A summmary of the results will appear after completion of the sessions.<br /> 
    Trial <span id="triali">1</span> / <span id="trialn">0</span> of block <span id="blocki">1</span> / <span id="blockn">0</span> of session <span id="sessioni">1</span> / <span id="session">0</span><br />
-      <div id="etr">..</div>
-   </div>
+   <div id="etr">..</div>
+ </div>
 </div>
 <div style="clear: both;" /></div>
 Diagonal length of screen in inches: <input type="text" id="diaglen" value="15.5" /><br />
 Distance of eyes away from display in inches: <input type="text" id="eyedist" value="30" /><br />
-<br /><button id="refresh" onclick="window.location.reload()">Reload entire game with above settings</button></div>
+Blocks per session: <input type="text" id="usr_bps" value="18" /><br />
+Trials per block: <input type="text" id="usr_tpb" value="24" /><br />
+<br /><button id="refresh" onclick="window.location.reload()">Rel
+  oad entire game with above settings</button></div>
 <!-- <script src="js/phaser.min.js"></script> -->
 <script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script> 
 <script type="module" src="js/train.js"></script>
 <script type="module" src="js/experiment.js"></script>
 <script type="module" src="js/main.js"></script>
 <script src="js/globals.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js"
+	data-dojo-config="async: true"></script>
 </body>
 </html>

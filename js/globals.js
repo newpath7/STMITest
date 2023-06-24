@@ -30,15 +30,11 @@ const pause_fac = 1;
 const TRIAL_TYPE_PAUSES = [[250 * pause_fac, 750 * pause_fac, 500 * pause_fac, 0, 0],
 	[250 * pause_fac, 750 * pause_fac, 500 * pause_fac, 3750 * pause_fac, 500 * pause_fac],
 	[250 * pause_fac, 3000 * pause_fac, 500 * pause_fac, 1500 * pause_fac, 500 * pause_fac]];
-/*
-const SESSIONS_PER_GAME = 2;
-const BLOCKS_PER_SESSION = 18;
-const TRIALS_PER_BLOCK = 24;
-*/
 
 const SESSIONS_PER_GAME = 2;
-const BLOCKS_PER_SESSION = 2;
-const TRIALS_PER_BLOCK = 3;
+const BLOCKS_PER_SESSION = document.getElementById("usr_bps").value; // should be 18 
+const TRIALS_PER_BLOCK = document.getElementById("usr_tpb").value; // should be 24
+const REQ_HCCT_MIN = Math.ceil(SESSIONS_PER_GAME * BLOCKS_PER_SESSION * TRIALS_PER_BLOCK * 0.0115); // should be 10 
 
 const RECT_VERT = 1;
 const RECT_HORZ = 2;
@@ -62,7 +58,7 @@ const RESP_NONELEN = 200;
 
 const SEE_TRIAL_RESULT_DELAY = 2000;
 
-const NUM_TRAINTRIALS = 2;
+const NUM_TRAINTRIALS = 10;
 
 const NOOFTH = "None of These"; /* response selection option */
 
